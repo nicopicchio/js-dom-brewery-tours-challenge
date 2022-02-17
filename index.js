@@ -27,8 +27,15 @@ function renderBrewery(brewery) {
 
 function renderBreweriesSearch(breweriesArray) {
 	ulElement.innerHTML = '';
-	state.breweries = breweriesArray;
-	breweriesArray.forEach((brewery) => renderBrewery(brewery));
+	breweriesArray.forEach((brewery) => {
+		if (
+			brewery.brewery_type === 'micro' ||
+			brewery.brewery_type === 'regional' ||
+			brewery.brewery_type === 'brewpub'
+		) {
+			renderBrewery(brewery);
+		}
+	});
 }
 
 function listenToSearchButton() {
@@ -39,7 +46,10 @@ function listenToSearchButton() {
 			`https://api.openbrewerydb.org/breweries?by_state=${searchInput.value}`
 		)
 			.then((response) => response.json())
-			.then((breweriesArray) => renderBreweriesSearch(breweriesArray));
+			.then(function (breweriesArray) {
+				state.breweries = breweriesArray;
+				renderBreweriesSearch(breweriesArray);
+			});
 	});
 }
 
@@ -51,8 +61,11 @@ function listenToDropDownMenu() {
 				`https://api.openbrewerydb.org/breweries?by_state=${searchInput.value}&by_type=${filterDropdown.value}`
 			)
 				.then((response) => response.json())
-				.then((breweriesArray) => renderBreweriesSearch(breweriesArray));
-		} else alert('Please choose a state first')
+				.then(function (breweriesArray) {
+					state.breweries = breweriesArray;
+					renderBreweriesSearch(breweriesArray);
+				});
+		} else alert('Please choose a state first');
 	});
 }
 
