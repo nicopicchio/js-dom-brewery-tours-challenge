@@ -32,7 +32,7 @@ function renderBreweriesSearch(breweriesArray) {
 }
 
 function listenToSearchButton() {
-  const searchByStateForm = document.querySelector('#select-state-form');
+	const searchByStateForm = document.querySelector('#select-state-form');
 	searchByStateForm.addEventListener('submit', function (e) {
 		e.preventDefault();
 		fetch(
@@ -46,17 +46,19 @@ function listenToSearchButton() {
 function listenToDropDownMenu() {
 	const filterDropdown = document.querySelector('#filter-by-type');
 	filterDropdown.addEventListener('change', function (event) {
-    fetch(
-			`https://api.openbrewerydb.org/breweries?by_state=${searchInput.value}&by_type=${filterDropdown.value}`
-		)
-			.then((response) => response.json())
-			.then((breweriesArray) => renderBreweriesSearch(breweriesArray));
-  });
+		if (searchInput.value !== '') {
+			fetch(
+				`https://api.openbrewerydb.org/breweries?by_state=${searchInput.value}&by_type=${filterDropdown.value}`
+			)
+				.then((response) => response.json())
+				.then((breweriesArray) => renderBreweriesSearch(breweriesArray));
+		} else alert('Please choose a state first')
+	});
 }
 
 function listenToUserEvents() {
-  listenToSearchButton();
-  listenToDropDownMenu()
+	listenToSearchButton();
+	listenToDropDownMenu();
 }
 
-listenToUserEvents()
+listenToUserEvents();
