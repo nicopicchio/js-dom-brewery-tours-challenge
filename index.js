@@ -1,14 +1,13 @@
 const state = {
-  breweries: []
-}
+	breweries: [],
+};
 
-const ulElement = document.querySelector('#breweries-list')
-const searchByStateForm = document.querySelector('#select-state-form')
-const searchInput = document.querySelector('#select-state')
+const ulElement = document.querySelector('#breweries-list');
+const searchInput = document.querySelector('#select-state');
 
 function renderBrewery(brewery) {
-  const breweryElement = document.createElement('li')
-  breweryElement.innerHTML = `
+	const breweryElement = document.createElement('li');
+	breweryElement.innerHTML = `
     <h2>${brewery.name}</h2>
     <div class="type">${brewery.brewery_type}</div>
     <section class="address">
@@ -22,24 +21,42 @@ function renderBrewery(brewery) {
     </section>
     <section class="link">
       <a href="${brewery.website_url}" target="_blank">Visit Website</a>
-    </section>`
-  ulElement.append(breweryElement)
+    </section>`;
+	ulElement.append(breweryElement);
 }
 
 function renderBreweriesSearch(breweriesArray) {
-  ulElement.innerHTML = ''
-  state.breweries = breweriesArray
-  breweriesArray.forEach(brewery => renderBrewery(brewery))
+	ulElement.innerHTML = '';
+	state.breweries = breweriesArray;
+	breweriesArray.forEach((brewery) => renderBrewery(brewery));
 }
 
-function listenToSearchButton () {
-  searchByStateForm.addEventListener('submit', function (e) {
-    e.preventDefault();
-    fetch(`https://api.openbrewerydb.org/breweries?by_state=${searchInput.value}`)
-    .then((response) => response.json())
-    .then((breweriesArray) => renderBreweriesSearch(breweriesArray))
-    searchByStateForm.reset()
-  })
+function listenToSearchButton() {
+  const searchByStateForm = document.querySelector('#select-state-form');
+	searchByStateForm.addEventListener('submit', function (e) {
+		e.preventDefault();
+		fetch(
+			`https://api.openbrewerydb.org/breweries?by_state=${searchInput.value}`
+		)
+			.then((response) => response.json())
+			.then((breweriesArray) => renderBreweriesSearch(breweriesArray));
+	});
 }
 
-listenToSearchButton()
+function listenToDropDownMenu() {
+	const filterDropdown = document.querySelector('#filter-by-type');
+	filterDropdown.addEventListener('change', function (event) {
+    fetch(
+			`https://api.openbrewerydb.org/breweries?by_state=${searchInput.value}&by_type=${filterDropdown.value}`
+		)
+			.then((response) => response.json())
+			.then((breweriesArray) => renderBreweriesSearch(breweriesArray));
+  });
+}
+
+function listenToUserEvents() {
+  listenToSearchButton();
+  listenToDropDownMenu()
+}
+
+listenToUserEvents()
