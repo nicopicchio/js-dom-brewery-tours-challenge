@@ -10,6 +10,7 @@ const searchBreweriesBar = document.querySelector('.search-bar');
 const h1El = document.querySelector('#main-list-heading');
 const asideElement = document.querySelector('.filters-section');
 const searchNameInput = document.querySelector('#search-breweries');
+const cityForm = document.querySelector('#filter-by-city-form');
 searchBreweriesBar.hidden = true;
 h1El.hidden = true;
 asideElement.hidden = true;
@@ -35,12 +36,28 @@ function renderBrewery(brewery) {
 }
 
 function renderBreweriesSearch(breweriesArray) {
-	ulElement.innerHTML = '';
+	clearPreviousSearch();
 	breweriesArray.forEach((brewery) => {
 		if (checkBreweryType(brewery)) {
 			renderBrewery(brewery);
+			renderCityFilter(brewery);
 		}
-	})
+	});
+}
+
+function renderCityFilter(brewery) {
+	const cityOnPage = cityForm.querySelectorAll('label')
+	for (const label of cityOnPage) {
+		if (label.innerText === brewery.city) return
+	}
+	const checkbox = document.createElement('input');
+	const cityLabel = document.createElement('label');
+	checkbox.setAttribute('type', 'checkbox');
+	checkbox.setAttribute('name', brewery.city.toLowerCase());
+	checkbox.setAttribute('value', brewery.city.toLowerCase());
+	cityLabel.setAttribute('for', brewery.city.toLowerCase());
+	cityLabel.innerText = brewery.city;
+	cityForm.append(checkbox, cityLabel);
 }
 
 function checkBreweryType(brewery) {
@@ -49,13 +66,15 @@ function checkBreweryType(brewery) {
 		brewery.brewery_type === 'regional' ||
 		brewery.brewery_type === 'brewpub'
 	)
-	return true
+		return true;
 }
 
 function listenToSearchBar() {
 	searchNameInput.addEventListener('input', function () {
-		state.filteredBreweries = state.breweries.filter((brewery) => brewery.name.includes(searchNameInput.value))
-		renderBreweriesSearch(state.filteredBreweries)
+		state.filteredBreweries = state.breweries.filter((brewery) =>
+			brewery.name.includes(searchNameInput.value)
+		);
+		renderBreweriesSearch(state.filteredBreweries);
 	});
 }
 
@@ -63,22 +82,22 @@ function listenToSearchButton() {
 	const searchByStateForm = document.querySelector('#select-state-form');
 	searchByStateForm.addEventListener('submit', function (e) {
 		e.preventDefault();
-		fetchOpenBreweryAPI();
-		showUI()
+		fetchOpenBreweryDB();
+		showUI();
 	});
 }
 
 function listenToDropDown() {
 	filterDropdown.addEventListener('change', function () {
-		fetchOpenBreweryAPI()
-		showUI()
+		fetchOpenBreweryDB();
+		showUI();
 	});
 }
 
-function fetchOpenBreweryAPI() {
-	let url = `https://api.openbrewerydb.org/breweries?by_state=${searchInput.value}`
+function fetchOpenBreweryDB() {
+	let url = `https://api.openbrewerydb.org/breweries?by_state=${searchInput.value}`;
 	if (filterDropdown.value) {
-		url += `&by_type=${filterDropdown.value}`
+		url += `&by_type=${filterDropdown.value}`;
 	}
 	fetch(url)
 		.then((response) => response.json())
@@ -96,6 +115,11 @@ function showUI() {
 	searchBreweriesBar.hidden = false;
 	h1El.hidden = false;
 	asideElement.hidden = false;
+}
+
+function clearPreviousSearch() {
+	ulElement.innerHTML = '';
+	cityForm.innerHTML = '';
 }
 
 function listenToUserEvents() {
