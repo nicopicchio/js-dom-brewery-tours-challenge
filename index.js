@@ -1,5 +1,6 @@
 const state = {
 	breweries: [],
+	filteredBreweries: [],
 };
 
 const ulElement = document.querySelector('#breweries-list');
@@ -8,6 +9,7 @@ const filterDropdown = document.querySelector('#filter-by-type');
 const searchBreweriesBar = document.querySelector('.search-bar');
 const h1El = document.querySelector('#main-list-heading');
 const asideElement = document.querySelector('.filters-section');
+const searchNameInput = document.querySelector('#search-breweries');
 searchBreweriesBar.hidden = true;
 h1El.hidden = true;
 asideElement.hidden = true;
@@ -51,8 +53,10 @@ function checkBreweryType(brewery) {
 }
 
 function listenToSearchBar() {
-	const searchInput = document.querySelector('#search-breweries');
-	searchInput.addEventListener('input', function () {});
+	searchNameInput.addEventListener('input', function () {
+		state.filteredBreweries = state.breweries.filter((brewery) => brewery.name.includes(searchNameInput.value))
+		renderBreweriesSearch(state.filteredBreweries)
+	});
 }
 
 function listenToSearchButton() {
@@ -65,7 +69,7 @@ function listenToSearchButton() {
 }
 
 function listenToDropDown() {
-	filterDropdown.addEventListener('change', function (event) {
+	filterDropdown.addEventListener('change', function () {
 		fetchOpenBreweryAPI()
 		showUI()
 	});
