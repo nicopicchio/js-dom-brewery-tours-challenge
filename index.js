@@ -4,6 +4,8 @@ const state = {
 
 const ulElement = document.querySelector('#breweries-list');
 const searchInput = document.querySelector('#select-state');
+const searchBreweriesBar = document.querySelector('.search-bar');
+searchBreweriesBar.hidden = true;
 
 function renderBrewery(brewery) {
 	const breweryElement = document.createElement('li');
@@ -33,9 +35,17 @@ function renderBreweriesSearch(breweriesArray) {
 			brewery.brewery_type === 'regional' ||
 			brewery.brewery_type === 'brewpub'
 		) {
+			searchBreweriesBar.hidden = false;
 			renderBrewery(brewery);
 		}
 	});
+}
+
+function listenToSearchBar() {
+	const searchInput = document.querySelector('#search-breweries')
+	searchInput.addEventListener('keypress', function () {
+		console.log(searchInput.value)
+	})
 }
 
 function listenToSearchButton() {
@@ -72,6 +82,7 @@ function listenToDropDownMenu() {
 function listenToUserEvents() {
 	listenToSearchButton();
 	listenToDropDownMenu();
+	listenToSearchBar()
 }
 
 listenToUserEvents();
