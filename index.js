@@ -11,6 +11,7 @@ const h1El = document.querySelector('#main-list-heading');
 const asideElement = document.querySelector('.filters-section');
 const searchNameInput = document.querySelector('#search-breweries');
 const cityForm = document.querySelector('#filter-by-city-form');
+const clearCheckboxBtn = document.querySelector('.clear-all-btn');
 searchBreweriesBar.hidden = true;
 h1El.hidden = true;
 asideElement.hidden = true;
@@ -46,9 +47,9 @@ function renderBreweriesSearch(breweriesArray) {
 }
 
 function renderCityFilter(brewery) {
-	const cityOnPage = cityForm.querySelectorAll('label')
-	for (const label of cityOnPage) {
-		if (label.innerText === brewery.city) return
+	const cityLabelsArray = cityForm.querySelectorAll('label');
+	for (const label of cityLabelsArray) {
+		if (label.innerText === brewery.city) return;
 	}
 	const checkbox = document.createElement('input');
 	const cityLabel = document.createElement('label');
@@ -58,6 +59,19 @@ function renderCityFilter(brewery) {
 	cityLabel.setAttribute('for', brewery.city.toLowerCase());
 	cityLabel.innerText = brewery.city;
 	cityForm.append(checkbox, cityLabel);
+
+	clearCheckboxBtn.addEventListener('click', function () {
+		fetchOpenBreweryDB();
+	});
+
+	checkbox.addEventListener('change', function (event) {
+		if (checkbox.checked) {
+			state.filteredBreweries = state.breweries.filter(
+				(brewery) => brewery.city.toLowerCase() === event.target.value
+			);
+			renderBreweriesSearch(state.filteredBreweries);
+		}
+	});
 }
 
 function checkBreweryType(brewery) {
@@ -80,8 +94,8 @@ function listenToSearchBar() {
 
 function listenToSearchButton() {
 	const searchByStateForm = document.querySelector('#select-state-form');
-	searchByStateForm.addEventListener('submit', function (e) {
-		e.preventDefault();
+	searchByStateForm.addEventListener('submit', function (event) {
+		event.preventDefault();
 		fetchOpenBreweryDB();
 		showUI();
 	});
